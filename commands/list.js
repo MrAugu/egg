@@ -6,7 +6,7 @@ const { logs } = require("../data/channels.json"); // eslint-disable-line no-unu
 const { mods } = require("../settings.json");
 const prePosts = require("../models/pre-post.js");
 const mongoose = require("mongoose");
-const mongoUrl = require("./tokens.json").mongodb;
+const mongoUrl = require("../tokens.json").mongodb;
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true

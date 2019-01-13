@@ -4,7 +4,7 @@ const { invisible } = require("../data/colors.json");
 const { loading, upvote, downvote } = require("../data/emojis.json"); // eslint-disable-line no-unused-vars
 const Posts = require("../models/post.js");
 const mongoose = require("mongoose");
-const mongoUrl = require("./tokens.json").mongodb;
+const mongoUrl = require("../tokens.json").mongodb;
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true

@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const { promisify } = require("util");
 const readdir = promisify(require("fs").readdir);
 
-const tokens = require("./tokens.json");
+const tokens = require("../tokens.json");
 const settings = require("./settings.json"); // eslint-disable-line no-unused-vars
 
 const client = new Discord.Client();

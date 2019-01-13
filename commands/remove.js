@@ -4,7 +4,7 @@ const { loading } = require("../data/emojis.json");
 const { devs } = require("../settings.json");
 const Posts = require("../models/post.js");
 const mongoose = require("mongoose");
-const mongoUrl = require("./tokens.json").mongodb;
+const mongoUrl = require("../tokens.json").mongodb;
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true
