@@ -1,22 +1,45 @@
-const Discord = require('discord.js');
-const db = require('quick.db');
-const { invisible } = require('../data/colors.json');
-const { loading } = require('../data/emojis.json');
+const Discord = require("discord.js"); // eslint-disable-line no-unused-vars
+const { loading } = require("../data/emojis.json");
+const Profiles = require("../models.profiles.js");
+const mongoose = require("mongoose");
+const mongoUrl = require("./tokens.json").mongodb;
+
+mongoose.connect(mongoUrl, {
+  useNewUrlParser: true
+});
 
 module.exports = {
-    name: 'bio',
-    description: 'Sets the user\'s bio.',
-    usage: '<description>',
-    args: true,
-    cooldown: `60`,
-    aliases: ['setbio', 'set-bio', 'bioset'],
-    async execute(client, message, args) {
-        const loadingM = await message.channel.send(`${loading} Setting bio...`);
+  name: "bio",
+  description: "Sets the user's bio.",
+  usage: "<description>",
+  args: true,
+  cooldown: "60",
+  aliases: ["setbio", "set-bio", "bioset"],
+  async execute (client, message, args) {
+    if (args.join(" ").length < 2) return message.channel.send("Your bio must be at lest 2 chars length.");
+    if (args.join(" ").length > 200) return message.channel.send("Bio must be less than 200 characters.");
 
-        let bio = args.slice(0).join(" ");
-        if(bio.length > 200) return loadingM.edit("Bio must be less than 200 characters.");
-        db.set(`egg.bio.${message.author.id}`, bio);
+    const loadingM = await message.channel.send(`${loading} Setting bio...`);
 
-        return loadingM.edit(`Successfully set your bio to: \`${bio}\``)
-    },  
+    Profiles.findOne({
+      authorID: message.author.id
+    }, async (err, user) => {
+      if (err) console.log(err);
+
+      if (!user) {
+        const newUser = new Profiles({
+          authorID: message.author.id,
+          eggs: 0,
+          bio: args.join(" ")
+        });
+
+        await newUser.save().catch(e => console.log(e));
+        return loadingM.edit(`Succesfully setted your bio to \`${args.join(" ")}\``);
+      }
+
+      user.bio = args.join(" ");
+      user.save().catch(e => console.log(e));
+      return loadingM.edit(`Succesfully setted your bio to \`${args.join(" ")}\``);
+    });
+  },  
 };
