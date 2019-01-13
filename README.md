@@ -1,0 +1,2 @@
+# egg
+Epic bot
