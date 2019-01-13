@@ -1,0 +1,20 @@
+{
+  "name": "egg",
+  "version": "0.0.1",
+  "description": "",
+  "main": "egg.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tetra#0001",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "fs": "0.0.1-security",
+    "klaw": "^3.0.0",
+    "parse-ms": "^2.0.0",
+    "quick.db": "^7.0.0-b19",
+    "string-similarity": "^3.0.0",
+    "valid-url": "^1.0.9"
+  }
+}
