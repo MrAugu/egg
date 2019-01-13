@@ -11,6 +11,7 @@ module.exports = {
     usage: '<image>',
     cooldown: '120',
     async execute(client, message, args) {
+        return message.channel.send("Uploading memes has now been disabled! Approvers need a break!");
         const downloadingM = await message.channel.send(`${downloading} Uploading to database...`);
 
         try {
