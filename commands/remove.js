@@ -1,31 +1,40 @@
-const Discord = require('discord.js');
-const db = require('quick.db');
-const { invisible } = require('../data/colors.json');
-const { loading } = require('../data/emojis.json');
-const { devs } = require('../settings.json');
+const Discord = require("discord.js"); // eslint-disable-line no-unused-vars
+const { invisible } = require("../data/colors.json"); // eslint-disable-line no-unused-vars
+const { loading } = require("../data/emojis.json");
+const { devs } = require("../settings.json");
+const Posts = require("../models/post.js");
+const mongoose = require("mongoose");
+const mongoUrl = require("./tokens.json").mongodb;
+
+mongoose.connect(mongoUrl, {
+  useNewUrlParser: true
+});
 
 module.exports = {
-    name: 'remove',
-    description: 'Removes a post from the database',
-    args: true,
-    usage: '<id>',
-    async execute(client, message, args) {
-        if(!devs.includes(message.author.id)) return;
+  name: "remove",
+  description: "Removes a post from the database",
+  args: true,
+  usage: "<id>",
+  async execute (client, message, args) {
+    if (!devs.includes(message.author.id)) return;
 
-        const loadingM = await message.channel.send(`${loading} Removing post...`);
-        const totalPosts = await db.fetch(`egg.totalPosts`);
-        if(isNaN(args[0])) return message.channel.send(`Not a valid number.`)
-        if(args[0] > totalPosts || args[0] < 0) return loadingM.edit(`That id does not exist!`);
-        let i = args[0]-1;
+    const msg = await message.channel.send(`${loading} Removing post...`);
+    Posts.findOne({
+      id: args[0]
+    }, async (err, p) => {
+      if (!p) return msg.edit("Couldn't find any post with this id.");
 
-        db.delete(`egg.id[${i}]`);
-        db.delete(`egg.image[${i}]`);
-        db.delete(`egg.author[${i}]`);
-        db.delete(`egg.authorID[${i}]`)
-        db.delete(`egg.avatar[${i}]`);
-        db.delete(`egg.upvotes[${i}]`);
-        db.delete(`egg.downvotes[${i}`);
+      Posts.findOneAndDelete({ id: p.id });
 
-        return loadingM.edit(`Deleted Post #${args[0]} from the database.`);
-    },  
+      const u = await client.fetchUser(p.authorID);
+
+      msg.edit("Deleted post from database.");
+
+      try {
+        u.send(`Damn! Seems like your post with id \`#${p.id}\` has been deleted by an Administrator.`);
+      } catch (e) {
+        return;
+      }
+    });
+  },  
 };

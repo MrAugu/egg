@@ -1,53 +1,61 @@
-const Discord = require('discord.js');
-const db = require('quick.db');
-const { devs } = require('../settings.json');
-const { downloading, rejected } = require('../data/emojis.json');
-const { invisible } = require('../data/colors.json');
-const { logs } = require('../data/channels.json');
-const { mods } = require('../settings.json');
+const Discord = require("discord.js"); // eslint-disable-line no-unused-vars
+const { downloading, rejected } = require("../data/emojis.json");
+const { logs } = require("../data/channels.json");
+const { mods } = require("../settings.json");
+const prePosts = require("../models/pre-post.js");
+const denyal = require("../models/denyedPosts.js");
+const mongoose = require("mongoose");
+const mongoUrl = require("./tokens.json").mongodb;
+
+mongoose.connect(mongoUrl, {
+  useNewUrlParser: true
+});
 
 module.exports = {
-    name: 'reject',
-    description: 'reject a post',
-    usage: '<id> <reason>',
-    args: 'true',
-    cooldown: '5',
-    aliases: ['r'],
-    async execute(client, message, args) {
-        if(!mods.includes(message.author.id)) return;
-        const downloadingM = await message.channel.send(`${downloading} Rejecting post...`);
+  name: "reject",
+  description: "reject a post",
+  usage: "<id> <reason>",
+  args: "true",
+  cooldown: "5",
+  aliases: ["r"],
+  async execute (client, message, args) {
+    if (!mods.includes(message.author.id)) return message.channel.send("You don't have requiered permissions to reject posts.");
 
-        try {
-            if(!args[1]) return downloadingM.edit("Please provide a reason for this rejection!");
-            if(isNaN(args[0])) return message.channel.send(`Not a valid number.`)
-            const total = await db.fetch(`egg.unapproved.totalPosts`);
-            if(args[0] > total || args[0] < 0) return loadingM.edit(`That id does not exist!`);
-            let i = args[0]-1;   
-            const status = await db.fetch(`egg.status[${i}]`) 
+    const reason = args.slice(1).join(" ");
+    if (!reason) return message.channel.send("You have to specify a reason for rejection.");
 
-            if(status === "approved") return downloadingM.edit("Post has already been approved!")
-            if(status === "rejected") return downloadingM.edit("Post has already been rejected!")
+    prePosts.findOne({
+      id: args[0]
+    }, async (err, post) => {
+      if (err) console.log(err);
 
-            let reason = args.slice(1).join(' ');
+      if (!post) return message.channel.send("Couldn't find any post matching that id.");
 
-            const id = await db.fetch(`egg.unapproved.id[${i}]`);
-            const user = await db.fetch(`egg.unapproved.author[${i}]`);
-            const userID = await db.fetch(`egg.unapproved.authorID[${i}]`);
-            db.delete(`egg.unapproved.id[${i}]`);
-            db.delete(`egg.unapproved.image[${i}]`);
-            db.delete(`egg.unapproved.author[${i}]`);
-            db.delete(`egg.unapproved.authorID[${i}]`)
-            db.delete(`egg.unapproved.avatar[${i}]`);
-            db.delete(`egg.unapproved.time[${i}]`);
-            db.set(`egg.status[${i}]`, "rejected");
+      const msg = await message.channel.send(`${downloading} Rejecting post...`);
+      prePosts.findOneAndDelete({ id: post.id }, (err, x) => console.log(err)); // eslint-disable-line no-unused-vars
 
-            downloadingM.edit("Successfully rejected & removed post to database!");
+      const newPost = new denyal({
+        id: post.id,
+        authorID: post.authorID,
+        uploadedAt: post.uploadedAt,
+        url: post.url,
+        rejectedBy: message.author.id,
+        reason: reason
+      });
 
-            client.channels.get(logs).send(`${rejected} ${message.author.username} rejected a post with id \`#${id}\`, submitted by ${user}. Reason: ${reason}`);
-            message.client.users.get(userID).send(`${rejected} Your meme has been rejected. \nReason: ${reason}!`);
-        } catch(error){
-            console.log(error);
-            downloadingM.edit(`An error occured while uploading image to database! Please make sure you are uploading an image, and not something else.`);
-        }
-    },
+      newPost.save().catch(e => console.log(e));
+
+      msg.edit(rejected + " Rejected the post with id `#" + post.id + "`.");
+
+      const u = await client.fetchUser(post.authorID);
+
+      client.channels.get(logs).send(`${rejected} Post \`#${post.id}\` by **${u.tag}** (ID: ${u.id}) has been approved by **${message.author.tag}** (ID: ${message.author.id}) for the reason: ${reason}`);
+
+      try {
+        u.send(`${rejected} Your post with id \`#${post.id}\` has been rejected by **${message.author.tag}** for the reason: ${reason}`);
+      } catch (e) {
+        return;
+      }
+    });
+  },
 };
