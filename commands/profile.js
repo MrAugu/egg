@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { invisible } = require("../data/colors.json");
 const { loading } = require("../data/emojis.json");
-const Profiles = require("../models.profiles.js");
+const Profiles = require("../models/profiles.js");
 const mongoose = require("mongoose");
 const mongoUrl = require("../tokens.json").mongodb;
 

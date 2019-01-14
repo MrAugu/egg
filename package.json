@@ -12,10 +12,10 @@
     "discord.js": "^11.4.2",
     "fs": "0.0.1-security",
     "klaw": "^3.0.0",
+    "mongoose": "^5.4.3",
     "parse-ms": "^2.0.0",
-    "quick.db": "^7.0.0-b19",
+    "quick.db": "^7.0.0-b21",
     "string-similarity": "^3.0.0",
-    "valid-url": "^1.0.9",
-    "mongoose": "^5.4.3"
+    "valid-url": "^1.0.9"
   }
 }

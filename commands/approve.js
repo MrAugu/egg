@@ -5,6 +5,7 @@ const prePosts = require("../models/pre-post.js");
 const Meme = require("../models/post.js");
 const mongoose = require("mongoose");
 const mongoUrl = require("../tokens.json").mongodb;
+const profs = require("../models/profiles.js");
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true
@@ -41,6 +42,27 @@ module.exports = {
 
       newPost.save().catch(e => console.log(e));
 
+      profs.findOne({
+        authorID: post.authorID
+      }, async (err, res) => {
+        if (err) console.log(err);
+
+        if (!res) {
+          const newProf = new profs({
+            authorID: post.authorID,
+            eggs: 20,
+            bio: "I'm a very mysterious person.",
+            totalPosts: 1
+          });
+
+          await newProf.save().catch(e => console.log(e));
+        }
+
+        res.eggs = res.eggs + 20;
+        res.totalPosts = res.totalPosts + 1;
+
+        await res.save().catch(e => console.log(e));
+      });
       msg.edit(approved + " Approvd the post with id `#" + post.id + "`.");
 
       const u = await client.fetchUser(post.authorID);

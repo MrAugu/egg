@@ -27,7 +27,7 @@ module.exports = {
         serverID: message.guild.id
       }).sort([
         ["id", "descending"]
-      ]).exec((err, res) => {
+      ]).exec(async (err, res) => {
         if (err) console.log(err);
 
         const unapprovedIDs = [];
@@ -36,9 +36,11 @@ module.exports = {
           unapprovedIDs.push(`${i[1].id}`);
         }
 
+        const numb = await prePosts.countDocuments();
+
         let listEmbed = new Discord.RichEmbed() // eslint-disable-line prefer-const
           .setTitle("List of Pending Posts")
-          .addField("Stats:", `Currently ${prePosts.countDocuments().toLocaleString()} posts awaiting approval.`)
+          .addField("Stats:", `Currently ${numb.toLocaleString()} posts awaiting approval.`)
           .setColor(invisible);
         listEmbed.addField("Unapproved posts:", `\`\`\`${unapprovedIDs.join(", ")}\`\`\``);
         return msg.edit(listEmbed);
