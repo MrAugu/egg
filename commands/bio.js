@@ -2,7 +2,7 @@ const Discord = require("discord.js"); // eslint-disable-line no-unused-vars
 const { loading } = require("../data/emojis.json");
 const Profiles = require("../models.profiles.js");
 const mongoose = require("mongoose");
-const mongoUrl = require("./tokens.json").mongodb;
+const mongoUrl = require("../tokens.json").mongodb;
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true

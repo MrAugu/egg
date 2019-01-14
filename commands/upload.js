@@ -5,7 +5,7 @@ const { invisible } = require("../data/colors.json");
 const { posts } = require("../data/channels.json");
 const prePost = require("../models/pre-post.js");
 const mongoose = require("mongoose");
-const mongoUrl = require("./tokens.json").mongodb;
+const mongoUrl = require("../tokens.json").mongodb;
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true
