@@ -40,8 +40,8 @@ module.exports = {
         approvedBy: message.author.id
       });
 
-      newPost.save().catch(e => console.log(e));
-
+      await newPost.save().catch(e => console.log(e));
+      client.memes.shift();
       profs.findOne({
         authorID: post.authorID
       }, async (err, res) => {
