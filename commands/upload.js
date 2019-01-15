@@ -17,6 +17,9 @@ module.exports = {
   usage: "<image>",
   cooldown: "120",
   async execute (client, message, args) {
+    
+    if (client.memes.length > 19) return message.channel.send("Already 20 memes queued for verification. Plesse wait for them to be verified by a moderator/administrator first");
+    
     const downloadingM = await message.channel.send(`${downloading} Uploading to database...`);
 
     try {
@@ -32,7 +35,7 @@ module.exports = {
         return downloadingM.edit(`That was not a valid url ${message.author}.\nCorrect Usage: \`egg upload <image>\``);
       }
 
-      console.log(img);
+
       if (!img) return downloadingM.edit("No image detected.");
 
       prePost.countDocuments(async (err, c) => {
@@ -47,6 +50,7 @@ module.exports = {
         });
 
         await post.save().catch(e => console.log(e));
+        client.memes.push(message.author.id);
         downloadingM.edit(`Successfully uploaded image to database!\n${loading} Waiting for approval from one of our moderators/administrators. (This system is to make sure images follows our guidelines.)`);
         const embed = new Discord.RichEmbed()
           .setAuthor(`Posted by: ${message.author.tag} (ID: ${message.author.id})`, message.author.displayAvatar)
