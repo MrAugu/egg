@@ -9,6 +9,8 @@ const settings = require("./settings.json"); // eslint-disable-line no-unused-va
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
+client.memes = [];
+
 const commandFiles = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
 
 const log = async (message) => {
