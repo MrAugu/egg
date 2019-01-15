@@ -22,34 +22,42 @@ module.exports = {
     try {
       let img;
       if (!args[0]) {
+        if (!message.attachments.first()) return downloadingM.edit(`You didn't provide any arguments ${message.author}.\nCorrect Usage: \`egg upload <image>\``);
         img = message.attachments.first().url;
         if (!img) return downloadingM.edit(`You didn't provide any arguments ${message.author}.\nCorrect Usage: \`egg upload <image>\``);
+      
       } else if (validUrl.isUri(args[0])) {
         img = args[0];
       } else {
         return downloadingM.edit(`That was not a valid url ${message.author}.\nCorrect Usage: \`egg upload <image>\``);
       }
 
-      const id = prePost.countDocuments() + 1;
+      console.log(img);
+      if (!img) return downloadingM.edit("No image detected.");
 
-      const post = new prePost({
-        id: id,
-        authorID: message.author.id,
-        uploadedAt: message.createdTimestamp,
-        url: img
+      prePost.countDocuments(async (err, c) => {
+        if (err) console.log(err);
+        const id = c + 1;
+
+        const post = new prePost({
+          id: id,
+          authorID: message.author.id,
+          uploadedAt: message.createdTimestamp,
+          url: img.toString()
+        });
+
+        await post.save().catch(e => console.log(e));
+        downloadingM.edit(`Successfully uploaded image to database!\n${loading} Waiting for approval from one of our moderators/administrators. (This system is to make sure images follows our guidelines.)`);
+        const embed = new Discord.RichEmbed()
+          .setAuthor(`Posted by: ${message.author.tag} (ID: ${message.author.id})`, message.author.displayAvatar)
+          .setDescription(`ID Number: ${id}`)
+          .setImage(img)
+          .setColor(invisible)
+          .setFooter("Awaiting for approval.")
+          .setTimestamp();
+        client.channels.get(posts).send(embed);
       });
-    
-      await post.save().catch(e => console.log(e));
-      downloadingM.edit(`Successfully uploaded image to database!\n${loading} Waiting for approval from one of our moderators/administrators. (This system is to make sure images follows our guidelines.)`);
 
-      const embed = new Discord.RichEmbed()
-        .setAuthor(`Posted by: ${message.author.tag} (ID: ${message.author.id})`, message.author.displayAvatar)
-        .setDescription(`ID Number: ${id}`)
-        .setImage(img)
-        .setColor(invisible)
-        .setFooter("Awaiting for approval.")
-        .setTimestamp();
-      client.channels.get(posts).send(embed);
     } catch (error) {
       console.log(error);
       downloadingM.edit("An error occured while uploading image to database! Please make sure you are uploading an image/gif/video, and not something else.");

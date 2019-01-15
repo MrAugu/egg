@@ -20,7 +20,8 @@ module.exports = {
       const msg = await message.channel.send(`${loading} Fetching meme...`);
 
       if (!args[0]) {
-        let memeIndex = Math.floor((Math.random() * Posts.countDocuments()));
+        const count = await Posts.countDocuments();
+        let memeIndex = Math.floor((Math.random() * count));
         if (memeIndex === 0) memeIndex = 1;
 
         Posts.findOne({

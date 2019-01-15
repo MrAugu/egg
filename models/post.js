@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const prePostSchema = mongoose.Schema({
-  id: String,
+  id: Number,
   authorID: String,
   uploadedAt: String,
   url: String,
