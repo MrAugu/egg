@@ -41,7 +41,8 @@ module.exports = {
 
       post.countDocuments(async (err, c) => {
         if (err) console.log(err);
-        const id = c + 1;
+        const hh = await prePost.countDocuments();
+        const id = c + hh + 1;
 
         const post = new prePost({
           id: id,
