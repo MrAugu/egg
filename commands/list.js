@@ -23,20 +23,20 @@ module.exports = {
 
     if (!args[0]) {
       
-      prePosts.find({
-        serverID: message.guild.id
-      }).sort([
-        ["id", "descending"]
+      prePosts.find().sort([
+        ["id", "ascending"]
       ]).exec(async (err, res) => {
         if (err) console.log(err);
 
         const unapprovedIDs = [];
-
+        
         for (const i of res) {
-          unapprovedIDs.push(`${i[1].id}`);
+          unapprovedIDs.push(`${i.id}`);
         }
 
         const numb = await prePosts.countDocuments();
+
+        if (numb < 1) return msg.edit("No posts pending approval.");
 
         let listEmbed = new Discord.RichEmbed() // eslint-disable-line prefer-const
           .setTitle("List of Pending Posts")

@@ -42,6 +42,9 @@ module.exports = {
             .setTimestamp();
           msg.edit(memEmbed);
 
+          await msg.react("⬆");
+          await msg.react("⬇");
+
           const filter = (r) => r.emoji.name === "⬆" || r.emoji.name === "⬇";
           const collector = msg.createReactionCollector(filter, { time: 60000 });
 
@@ -76,6 +79,8 @@ module.exports = {
             .setTimestamp();
           msg.edit(memEmbed);
 
+          await msg.react("⬆");
+          await msg.react("⬇");
           const filter = (r) => r.emoji.name === "⬆" || r.emoji.name === "⬇";
           const collector = msg.createReactionCollector(filter, { time: 60000 });
 

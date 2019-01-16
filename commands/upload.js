@@ -6,6 +6,7 @@ const { posts } = require("../data/channels.json");
 const prePost = require("../models/pre-post.js");
 const mongoose = require("mongoose");
 const mongoUrl = require("../tokens.json").mongodb;
+const post = require("../models/post.js");
 
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true
@@ -38,7 +39,7 @@ module.exports = {
 
       if (!img) return downloadingM.edit("No image detected.");
 
-      prePost.countDocuments(async (err, c) => {
+      post.countDocuments(async (err, c) => {
         if (err) console.log(err);
         const id = c + 1;
 
